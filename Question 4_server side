@@ -1,0 +1,56 @@
+import socket
+import threading
+import random
+
+#List of quotes
+quotes = [
+	"Dont beg for things. Do it yourself, or else you wont get anything. -Renton Thurston (Eureka Seven)",
+	"If you dont take risks, you cant create a future! -Monkey D.Luffy (One Piece)",
+	"People's lives dont end when they die, it ends when they lose faith. -Itachi Uchiha (Naruto)",
+	"If you dont like your destiny, dont accept it. -Naruto Uzumaki (Naurto)",
+	"I'll leave tomorrow's problem to tomorrow's me. -Saitama (One Punch Man)",
+	"Hard work betrays none, but dreams betray many. working hard alone doesn't assure you that you'll achieve your dreams. actually there are more cases where you don't. even so, working hard and achieving something is some consolation at least. -Hikigaya Hachiman (Oregairu)",
+	"Fake people have image to maintain, real people just don't care. -Hikigaya Hachiman (Oregairu)",
+	"If to be truthful is to be cruel, then lying must surely be an act of kindness. And so, kindness is a lie. -Hikigaya Hachiman (Oregairu)",
+	"Everyone is a slave to their past. No matter how much you wish to move forward, the events of last year will bear down on you like the light of the stars as soon as you glance up. Unable to laugh or to banish your past, you carry it ceaselessly in a corner of your heart, waiting for it to resurrect at an inopportune moment. -Hikigaya Hachiman (Oregairu)",
+	"Having people acknowledge your existence is a wonderful thing. -Hikigaya Hachiman (Oregairu)",
+	"Why is it that the beautiful things are more intertwined in death more that life? -Kaneki Ken (Tokyo Ghoul)",
+	"Sometimes good people make bad choices, it doesn’t mean they are bad people. It means they are human. -Kishou Arima (Tokyo Ghoul)",
+	"It doesn’t matter how it’s done. It doesn’t matter what needs to be sacrificed. In this world, winning is everything. -Ayanokouji Kiyotaka (Classroom of Elite)",
+	"Smiling means letting your guard down in front of another person, even if just a little. -Ayanokouji Kiyotaka (Classroom of ELite)"
+	]
+	
+def get_quote():	
+	return random.choice(quotes)
+	
+def handle_client(client_socket, client_address):
+	print(f"Client connected.")
+	
+	quote = get_quote()
+	client_socket.send(quote.encode())
+	
+	client_socket.close()
+	print(f"Client disconnected.")
+	
+	
+def main():
+	host = "0.0.0.0"
+	port = 8888
+	
+	#Set up the server socket
+	server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	server_socket.bind((host, port))
+	server_socket.listen(5)
+	
+	print("Quote of the Day Server listening on port 8888...")
+	
+	while True:
+		#Wait for a new connection
+		client_socket, client_address = server_socket.accept()
+		
+		#Create a new thread to handle the client
+		client_thread = threading.Thread(target=handle_client, args=(client_socket, client_address))
+		client_thread.start()
+	
+if __name__ == "__main__":
+		main()
