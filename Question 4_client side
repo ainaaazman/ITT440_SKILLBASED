@@ -1,0 +1,26 @@
+Import socket
+
+def get_qotd ():
+host = '192.168.136.128'
+ 	port = 8888
+
+ # Create a socket object
+ 	client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ try:
+ # Connect to the server
+ 		client_socket.connect((server_host, server_port))
+
+ # Receive data from the server (quote of the day)
+ quote = client_socket.recv(1024).decode('utf-8')
+ print(f"Quote of the day: {quote}")
+
+ except ConnectionRefusedError:
+ print("Connection refused.")
+ 	except Exception as e:
+ print(f”An error has occurred: {e}")
+ 	finally:
+ # Close the client socket
+ client_socket.close()
+
+if __name__ == "__main__":
+ get_qotd ()	
