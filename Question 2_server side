@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+
+#define PORT 8443
+
+int random_num() {
+    return rand() % 900 + 100; // Generates a random number between 100 and 999
+}
+
+int main() {
+    int server_socket, client_socket;
+    struct sockaddr_in server_addr, client_addr;
+    socklen_t client_addr_len = sizeof(client_addr);
+    char buffer[256];
+
+    // Create socket
+    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_socket == -1) {
+        perror("Error creating socket.");
+        return 1;
+    }
+
+    // Prepare the server address structure
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(PORT);
+
+    // Bind the socket
+    if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
+        perror("Error binding to the socket.");
+        return 1;
+    }
+
+    // Listen for incoming connections
+    if (listen(server_socket, 5) == -1) {
+        perror("Error listening for incoming connections.");
+        return 1;
+    }
+
+    printf("Server is listening on port %d...\n", PORT);
+
+    while (1) {
+        // Accept a new client connection
+        client_socket =accept(server_socket, (struct sockaddr *)&client_addr, &client_addr_len);
+        if (client_socket == -1) {
+            perror("Error accepting client connection");
+            return 1;
+        }
+
+        // Generate a random number
+        int num = random_num();
+
+        // Convert the random number to a string
+        snprintf(buffer, sizeof(buffer), "%d",num);
+
+        // Send the random number to the client
+        if (send(client_socket, buffer, strlen(buffer), 0) == -1) {
+            perror("Error sending data to client");
+        }
+
+        printf("Sent random number %d to the client.\n",num);
+
+        // Close the client socket
+        close(client_socket);
+    }
+
+    // Close the server socket
+    close(server_socket);
+
+    return 0;
+}
