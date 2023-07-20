@@ -1,0 +1,35 @@
+import socket
+
+def convert_to_atm(pressureBar):
+    return pressureBar / 1.01325
+
+host = “0.0.0.0”
+port = 8443
+
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_addr = (host, port)
+server_socket.bind(server_addr)
+server_socket.listen(1)
+
+print("Server is listening on {} and port {}".format(host, port))
+
+    while True:
+        client_socket, client_addr = server_socket.accept()
+        print("Connected to client: {}".format(client_addr))
+
+        # Receive pressure in bar from the client
+        pressureBar_str = client_socket.recv(1024).decode()
+        try:
+            pressureBar = float(pressureBar _str)
+            atm_standard = convert_to_atm(pressureBar)
+            atm_standard_str = str(atm_standard)
+
+            # Send converted value back to the client
+            client_socket.send(atm_standard_str.encode())
+
+            print("Converted pressure sent to the client: {} atm".format(atm_standard_str))
+        except ValueError:
+            print("Invalid pressure value received from the client.")
+        
+        client_socket.close()
+
