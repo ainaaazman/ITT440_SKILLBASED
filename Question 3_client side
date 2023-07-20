@@ -1,0 +1,27 @@
+import socket
+
+host = "192.168.79.134"
+port = 8443
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect((host, port))
+
+    try:
+        # Get pressure value from the user
+        pressureBar_str = input("Enter pressure bar: ")
+
+        # Send pressure value to the server
+        client_socket.send(pressureBar_str.encode())
+
+        # Receive converted value from the server
+        atm_standard_str = client_socket.recv(1024).decode()
+        atm_standard = float(atm_standard_str)
+
+        # Display the converted value
+        print("Received atmosphere standard value from server: {} atm".format(atm_standard_str))
+    except ValueError:
+        print("Invalid pressure value entered.")
+    except ConnectionRefusedError:
+        print("Connection failed.”)
+
+    client_socket.close()
