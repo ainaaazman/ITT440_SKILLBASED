@@ -1,0 +1,35 @@
+import socket
+
+def connect_to_server(host, port):
+    try:
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect((host, port))
+        return client_socket
+    except Exception as e:
+        print("Error connecting to the server:", e)
+        return None
+
+def send_data(client_socket, data):
+    try:
+        client_socket.sendall(data.encode())
+        response = client_socket.recv(1024).decode()
+        return response
+    except Exception as e:
+        print("Error sending/receiving data:", e)
+        return None
+
+if __name__ == "__main__":
+    host = "izani.synology.me"
+    port = 8443
+
+    client_socket = connect_to_server(host, port)
+    if client_socket:
+        try:
+            student = input("Enter your student ID: ")
+            response = send_data(client_socket, student)
+            if response:
+                print("Server response:", response)
+        except KeyboardInterrupt:
+            print("User interrupted the input.")
+        finally:
+            client_socket.close()
